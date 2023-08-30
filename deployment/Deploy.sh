@@ -244,6 +244,8 @@ echo "
 # 2) chmod +x Deploy.sh
 # 3) bash ./Deploy.sh
 
+# Automático
 # curl -s "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Deploy.sh" | bash
-# curl "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Deploy.sh" | bash
+
+# Personalizado
 # bash <(curl -s "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Deploy.sh")
