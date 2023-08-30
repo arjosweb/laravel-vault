@@ -86,13 +86,13 @@ fi
 
 # Baixa Repo
 echo "📦  Baixando repositório..."
-#git clone https://github.com/arjosweb/laravel-vault.git
+git clone https://github.com/arjosweb/laravel-vault.git
 echo "✅  Etapa concluída!"
 
 ## Permissão na pasta
 echo "🔒 Concedendo permissões..."
-#chmod +x laravel-vault
-#sudo chmod 777 -R laravel-vault/backend/
+chmod +x laravel-vault
+sudo chmod 777 -R laravel-vault/backend/
 echo "✅  Etapa concluída!"
 
 # Cria o .env do projeto Laravel
@@ -219,7 +219,7 @@ echo "✅  Etapa concluída!"
 # Colocar de forma mais permanente
 echo "🚀  Inicializando aplicações..."
 cd laravel-vault/ && docker-compose --env-file .env up -d
-docker exec laravel-vault_backend_1 sh -c "composer install && php artisan key:generate --force && php artisan migrate --seed --force && php artisan storage:link"
+docker exec laravel-vault-backend-1 sh -c "composer install && php artisan key:generate --force && php artisan migrate --seed --force && php artisan storage:link"
 echo "✅  Etapa concluída!"
 
 echo "
