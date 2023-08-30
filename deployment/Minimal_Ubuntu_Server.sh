@@ -157,6 +157,6 @@ fi
 echo "✅  Etapa concluída!"
 
 # Steps:
-# 1) nano run.sh
-# 2) chmod +x run.sh
-# 3) sudo bash ./run.sh
+# 1) nano Minimal_Ubuntu_Server.sh
+# 2) chmod +x Minimal_Ubuntu_Server.sh
+# 3) sudo bash ./Minimal_Ubuntu_Server.sh
