@@ -6,7 +6,7 @@ echo "=================================================
           Open Source Password Manager
         Author: ARJOS (https://arjos.eu)
 ================================================="
-echo "🏗️  Iniciando a instalação do seu Gerenciador de Senhas..."
+echo "🏗️ Iniciando a instalação do seu Gerenciador de Senhas..."
 
 # DEFAULT
 IP=''
@@ -20,7 +20,7 @@ DB_USERNAME=laravel_vault
 DB_PASSWORD=laravel_vault_pwd
 CACHE_DRIVER=redis
 
-echo "📦  Configurando opções..."
+echo "⚙️  Configurando opções da aplicação..."
 # IP
 read -p "⚠️  Qual o endereço de IP do seu servodor? (Ex: 192.168.15.0) " resposta_ip
 resposta_lower_ip=$(echo "$resposta_ip" | tr '[:upper:]' '[:lower:]')
@@ -43,9 +43,9 @@ fi
 read -p "⚠️  Qual a porta que deseja rodar o PHPMyAdmin? (Ex: 9999) " resposta_port_pma
 resposta_lower_port_pma=$(echo "$resposta_port_pma" | tr '[:upper:]' '[:lower:]')
 if [[ $resposta_lower_port_pma ]]; then
-    PMA_HOST="$resposta_lower_port_pma"
+    PMA_PORT="$resposta_lower_port_pma"
 else
-    echo "$PMA_HOST"
+    echo "$PMA_PORT"
 fi
 
 # DB_PORT
@@ -97,25 +97,45 @@ echo "✅  Etapa concluída!"
 
 # Cria o .env do projeto Laravel
 echo "🔥  Configurando projeto..."
-rm -R laravel-vault/docker/laravel/.env
+
+# Remove .env existentes
+if [ -f "laravel-vault/docker/.env.example" ]; then
+    rm -R laravel-vault/docker/.env.example
+fi
+
+if [ -f "laravel-vault/docker/laravel/.env" ]; then
+    rm -R laravel-vault/docker/laravel/.env
+fi
+
+if [ -f "laravel-vault/.env" ]; then
+    rm -R laravel-vault/.env
+fi
+
+# Copia a base padrão do .env do Laravel
+cp laravel-vault/docker/laravel/.env.example laravel-vault/docker/.env.example
+
+# Adiciona variáveis no novo arquivo .env.example
 echo "
 APP_PORT=${APP_PORT}
 PMA_HOST=${PMA_HOST}
+PMA_PORT=${PMA_PORT}
 DB_PORT=${DB_PORT}
 DB_HOST=${DB_HOST}
 DB_DATABASE=${DB_DATABASE}
 DB_USERNAME=${DB_USERNAME}
 DB_PASSWORD=${DB_PASSWORD}
 #CACHE_DRIVER=${CACHE_DRIVER}
-" >> laravel-vault/docker/laravel/.env.example
+" >> laravel-vault/docker/.env.example
 
-# Cria o .env do Docker
-rm -R laravel-vault/.env
-cp laravel-vault/docker/laravel/.env.example laravel-vault/.env
-cp laravel-vault/docker/laravel/.env.example laravel-vault/docker/.env.example
+# Cria o .env do Docker e do Laravel
+cp laravel-vault/docker/.env.example laravel-vault/.env
+cp laravel-vault/docker/.env.example laravel-vault/docker/laravel/.env
 
 # Cria Docker Compose Padrão
-rm -R laravel-vault/docker-compose.yaml
+if [ -f "laravel-vault/docker-compose.yaml" ]; then
+    rm -R laravel-vault/docker-compose.yaml
+fi
+
 echo "# docker-compose.yaml
 version: '3.8'
 
@@ -186,16 +206,6 @@ services:
       - vault_network
 
   # Optional Installations
-
-  # Mailpit (OPTIONAL)
-  # mailpit:
-  #   image: axllent/mailpit:v1.6.13
-  #   ports:
-  #     - "1025:1025"
-  #     - "8025:8025"
-  #   networks:
-  #     - vault_network
-
   # Redis (OPTIONAL)
   cache:
     image: redis:7
