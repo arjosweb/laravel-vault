@@ -153,7 +153,8 @@ services:
       dockerfile: docker/Dockerfile
     volumes:
       - ./backend:/backend
-      - ./docker/laravel/.env.example:/backend/.env
+      - ./docker/laravel/.env:/backend/.env
+    #command: sh -c 'composer install && php artisan migrate'
     working_dir: /backend
     depends_on:
       - database
@@ -182,7 +183,7 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE-laravel_vault}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD-laravel_vault_pwd}
     volumes:
-      - ./database:/var/lib/mysql
+      - ./database/mysql:/var/lib/mysql
     networks:
       - vault_network
 
@@ -216,7 +217,8 @@ echo "✅  Etapa concluída!"
 
 # Colocar de forma mais permanente
 echo "🚀  Inicializando aplicações..."
-#cd laravel-vault/ && docker-compose --env-file .env up -d
+cd laravel-vault/ && docker-compose --env-file .env up -d
+docker exec laravel-vault_backend_1 sh -c "composer install && php artisan key:generate --force && php artisan migrate --seed --force && php artisan storage:link"
 echo "✅  Etapa concluída!"
 
 echo "

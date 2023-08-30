@@ -17,17 +17,5 @@ RUN docker-php-ext-install pdo_mysql
 RUN mkdir -p /backend/storage/logs \
     && chmod -R 777 /backend/storage
 
-# Copia arquivo de inicialização do Laravel
-COPY startup.sh /backend/startup.sh
-
-# Copia .env
-COPY .env /backend/.env
-
-# Dar permissão de execução ao script
-RUN chmod +x /backend/startup.sh
-
 # Define o diretório de trabalho
 WORKDIR /backend
-
-# Comando de inicialização para executar o script
-CMD ["./startup.sh"]
