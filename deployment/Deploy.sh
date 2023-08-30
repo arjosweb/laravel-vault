@@ -130,6 +130,7 @@ DB_PASSWORD=${DB_PASSWORD}
 # Cria o .env do Docker e do Laravel
 cp laravel-vault/docker/.env.example laravel-vault/.env
 cp laravel-vault/docker/.env.example laravel-vault/docker/laravel/.env
+cp laravel-vault/.env laravel-vault/backend/.env
 
 # Cria Docker Compose Padrão
 if [ -f "laravel-vault/docker-compose.yaml" ]; then
