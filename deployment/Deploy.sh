@@ -8,6 +8,14 @@ echo "=================================================
 ================================================="
 echo "🏗️ Iniciando a instalação do seu Gerenciador de Senhas..."
 
+docker info > /dev/null 2>&1
+
+# Ensure that Docker is running...
+if [ $? -ne 0 ]; then
+    echo "O Docker não está rodando no seu servidor... Instalação não realizada!"
+    exit 1
+fi
+
 # DEFAULT
 IP=''
 APP_PORT=9001
@@ -235,3 +243,6 @@ echo "
 # 1) nano Deploy.sh
 # 2) chmod +x Deploy.sh
 # 3) bash ./Deploy.sh
+
+# curl -s "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Deploy.sh" | bash
+# curl "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Deploy.sh" | bash
