@@ -246,3 +246,4 @@ echo "
 
 # curl -s "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Deploy.sh" | bash
 # curl "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Deploy.sh" | bash
+# bash <(curl -s "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Deploy.sh")
