@@ -162,7 +162,7 @@ echo "✅  Etapa concluída!"
 # 3) sudo bash ./Minimal_Ubuntu_Server.sh
 
 # Automático
-# curl -s "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Minimal_Ubuntu_Server.sh" | bash
+# sudo curl -s "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Minimal_Ubuntu_Server.sh" | bash
 
 # Personalizado
-# bash <(curl -s "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Minimal_Ubuntu_Server.sh")
+# sudo bash <(curl -s "https://raw.githubusercontent.com/arjosweb/laravel-vault/master/deployment/Minimal_Ubuntu_Server.sh")
