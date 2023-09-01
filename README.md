@@ -11,5 +11,5 @@ docker-compose --env-file .env up -d
 
 ### Acessar bash do container do Laravel
 ```shell
-docker exec -it laravel-vault-backend-1 sh
+docker exec -it laravel-vault_backend_1 sh
 ```

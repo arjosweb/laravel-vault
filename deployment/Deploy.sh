@@ -227,7 +227,7 @@ echo "✅  Etapa concluída!"
 # Colocar de forma mais permanente
 echo "🚀  Inicializando aplicações..."
 cd laravel-vault/ && docker-compose --env-file .env up -d
-docker exec laravel-vault-backend-1 sh -c "composer install && php artisan key:generate --force && php artisan migrate --seed --force && php artisan storage:link"
+docker exec laravel-vault-backend-1 sh -c "composer install && php artisan key:generate --force && php artisan jwt:secret && php artisan migrate --seed --force && php artisan storage:link"
 echo "✅  Etapa concluída!"
 
 echo "

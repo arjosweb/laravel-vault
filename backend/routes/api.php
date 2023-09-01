@@ -1,33 +1,40 @@
 <?php
 
-use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\SpecialistController;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Middleware\ThrottleRequests;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
+// API Running
 Route::get('', function () {
     return response()->json(['status_code' => 200]);
 });
 
-Route::post('/login', function (Request $request) {
-    if (Auth::attempt($request->only(['email', 'password'])) === false) {
-        return response()->json(['status_code' => 401], 401);
-    }
-
-    return response()->json(['status_code' => 200]);
+// AUTHENTICATION API V1
+Route::prefix('v1/auth')->name('api.v1.auth.')->group(function () {
+    /* Login */
+    Route::post('login',  [AuthController::class, 'login'])->name('login');
+    /* Logout */
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    /* Me (User Logged) */
+    Route::post('me',     [AuthController::class, 'me'])->name('me');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/specialists/highest_rated/{limit?}', [SpecialistController::class, 'highestRated']);
-    Route::apiResource('/specialists', SpecialistController::class);
-    Route::apiResource('specialists.reviews', ReviewController::class);
-});
+// UNAUTHORIZED API V1
+Route::get('unauthorized', function (){
+    // Log::warning('Erro de autenticação da API!', [request()->json()]);
+    return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
+})->name('api.unauthorized');
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-Route::get('/test', fn () => 'Ok')
-    ->withoutMiddleware(ThrottleRequests::class . ':api');
 
+// PROTECTED API V1
+Route::group(['middleware' => 'auth:api'], function () {
+    // API - V1
+    Route::prefix('v1')->name('api.v1.')->group(function () {
+        /* Users */
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::apiResource('', UserController::class)->only(['index', 'show', 'store']);
+            Route::put('', [UserController::class, 'update'])->name('update');
+            Route::delete('', [UserController::class, 'destroy'])->name('destroy');
+        });
+    });
+});
