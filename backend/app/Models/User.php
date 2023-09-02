@@ -14,6 +14,10 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    // STATUS
+    public const ROLE_USER = 0;
+    public const ROLE_ADMIN = 1;
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

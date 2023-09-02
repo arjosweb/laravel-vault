@@ -19,6 +19,7 @@ class UserFactory extends Factory
     {
         return [
             'name' => 'Admin', // fake()->name()
+            'role_key' => 1, // Admin
             'email' => 'admin@mail.com', //fake()->unique()->safeEmail()
             'email_verified_at' => now(),
             'password' => bcrypt(1234), // password

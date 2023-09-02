@@ -23,10 +23,16 @@ class UserController extends Controller
 
     public function index(): JsonResponse
     {
-        $users = $this->user
-            ->orderBy('id', 'DESC')
-            //->get();
-            ->paginate(10);
+        // Apenas admin pode vizualisar todos os usuários.
+        if(auth()->user()['role_key'] !== User::ROLE_ADMIN){
+            $users = $this->user->where('uuid', '=', auth()->user()['uuid'])->first();
+        }
+        else {
+            $users = $this->user
+                ->orderBy('id', 'DESC')
+                //->get();
+                ->paginate(10);
+        }
 
         return response()->json($users);
     }
@@ -34,6 +40,10 @@ class UserController extends Controller
     public function store(FormRequest $request): JsonResponse
     {
         try {
+            if(auth()->user()['role_key'] !== User::ROLE_ADMIN){
+                return response()->json(['error' => 'Você não tem permissão para executar essa ação.'], 401);
+            }
+
             $data = $request->all();
 
             if ($request->has('password') && $request->input('password')) {
@@ -52,11 +62,20 @@ class UserController extends Controller
     {
         $user = $this->user->where('uuid', '=', $key)->first();
 
+        if (!isset($user)) {
+            return response()->json(['error' => 'Usuário não encontrado.'], 404);
+        }
+
         return response()->json($user);
     }
 
     public function update($key, FormRequest $request): JsonResponse
     {
+        // Apenas admin pode editar outros usuários.
+        if(auth()->user()['role_key'] !== User::ROLE_ADMIN && auth()->user()['uuid'] !== $key){
+            return response()->json(['error' => 'Você não tem permissão para executar essa ação.'], 401);
+        }
+
         $user = $this->user->where('uuid', '=', $key)->first();
 
         if (!$user) {
@@ -77,7 +96,18 @@ class UserController extends Controller
 
     public function destroy($key): JsonResponse
     {
-        $this->user->where('uuid', '=', $key)->delete();
+        if(auth()->user()['uuid'] === $key){
+            return response()->json(['error' => 'Você não pode remover o próprio usuário. Entre em contato com o administrador.'], 401);
+        }
+
+        // Apenas admin pode remover outros usuários.
+        if(auth()->user()['role_key'] !== User::ROLE_ADMIN){
+            return response()->json(['error' => 'Você não tem permissão para executar essa ação.'], 401);
+        }
+
+        if (!$this->user->where('uuid', '=', $key)->delete()) {
+            return response()->json(['error' => 'Usuário não encontrado.'], 404);
+        }
 
         return response()->json(null, 204);
     }
