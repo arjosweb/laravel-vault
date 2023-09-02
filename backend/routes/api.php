@@ -31,10 +31,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     // API - V1
     Route::prefix('v1')->name('api.v1.')->group(function () {
         /* Users */
-        Route::prefix('users')->name('users.')->group(function () {
-            Route::apiResource('', UserController::class)->only(['index', 'show', 'store']);
-            Route::put('', [UserController::class, 'update'])->name('update');
-            Route::delete('', [UserController::class, 'destroy'])->name('destroy');
-        });
+        Route::apiResource('users', UserController::class);
     });
 });

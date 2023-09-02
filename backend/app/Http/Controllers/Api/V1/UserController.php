@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use PHPUnit\Exception;
+use function PHPUnit\Framework\exactly;
 
 class UserController extends Controller
 {
@@ -22,7 +24,6 @@ class UserController extends Controller
     public function index(): JsonResponse
     {
         $users = $this->user
-            //->with(['links'])
             ->orderBy('id', 'DESC')
             //->get();
             ->paginate(10);
@@ -30,62 +31,46 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-    public function store(): JsonResponse
+    public function store(FormRequest $request): JsonResponse
     {
         try {
-            $user = new $this->user;
-            $user->fill($this->request->all());
+            $data = $request->all();
 
-            if ($this->request->has('password') && $this->request->get('password')) {
-                $user->password = bcrypt($this->request->get('password'));
+            if ($request->has('password') && $request->input('password')) {
+                $data['password'] = bcrypt($request->input('password'));
             }
 
-            $user->fill([
-                'address' => $this->request->get('address'),
-                'avatar' => $this->request->get('avatar'),
-                'email' => $this->request->get('email'),
-                'name' => $this->request->get('name'),
-                'phone' => $this->request->get('phone'),
-                'status_key' => $this->request->get('status_key'),
-                'preferences' => $this->request->get('preferences'),
-            ]);
-            if (!$user->save()) {
-                return response()->json(['success' => false, 'error' => 'Error.'], 406);
-            }
-            return response()->json($user);
+            $user = $this->user->create($data);
+
+            return response()->json($user, 201); // 201 Created status code.
         } catch (Exception $exception) {
-            return response()->json(['success' => false, 'error' => 'Server error.'], 500);
+            return response()->json(['success' => false, 'error' => 'Server error: '. $exception->getMessage()], 500);
         }
     }
 
     public function show($key): JsonResponse
     {
-        $user = $this->user
-            // ->with(['keys'])
-            ->where('uuid', '=', $key);
+        $user = $this->user->where('uuid', '=', $key)->first();
 
         return response()->json($user);
     }
 
-    public function update($key): JsonResponse
+    public function update($key, FormRequest $request): JsonResponse
     {
-        $user = $this->user->where('uuid', '=', $key);
+        $user = $this->user->where('uuid', '=', $key)->first();
 
-        if ($this->request->has('password') && $this->request->get('password')) {
-            $user->password = bcrypt($this->request->get('password'));
+        if (!$user) {
+            return response()->json(['error' => 'Usuário não encontrado'], 404);
         }
 
-        $user->fill([
-            'address' => $this->request->get('address'),
-            'avatar' => $this->request->get('avatar'),
-            'email' => $this->request->get('email'),
-            'name' => $this->request->get('name'),
-            'phone' => $this->request->get('phone'),
-            'status_key' => $this->request->get('status_key'),
-            'preferences' => $this->request->get('preferences'),
-        ]);
+        $modelAttributes = array_keys($user->getAttributes());
+        $data = $request->only($modelAttributes);
 
-        $user->save();
+        if ($request->has('password') && $request->input('password')) {
+            $data['password'] = bcrypt($request->input('password'));
+        }
+
+        $user->update($data);
 
         return response()->json($user);
     }
